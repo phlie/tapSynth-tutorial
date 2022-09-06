@@ -180,10 +180,19 @@ void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     // This loop will later on hold information upon a voice being succussfully cast to SynthesiserVoice
     for (int i = 0; i < synth.getNumVoices(); ++i)
     {
-        if (auto voice = dynamic_cast<juce::SynthesiserVoice*>(synth.getVoice(i)))
+        // Changed to see if it is our own synth voice class not the default one so we can call updateADSR
+        if (auto voice = dynamic_cast<SynthVoice*>(synth.getVoice(i)))
         {
             // Osc controls
             // ADSR
+            // Get the value of the parameter with a certain codename
+            auto& attack = *apvts.getRawParameterValue("ATTACK");
+            auto& decay = *apvts.getRawParameterValue("DECAY");
+            auto& sustain = *apvts.getRawParameterValue("SUSTAIN");
+            auto& release = *apvts.getRawParameterValue("RELEASE");
+
+            // The .load() on the end indicates that it is an atomic float not a normal float.
+            voice->updateADSR(attack.load(), decay.load(), sustain.load(), release.load());
             // LFO
         }
     }

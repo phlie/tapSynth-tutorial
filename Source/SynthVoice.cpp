@@ -70,19 +70,25 @@ void SynthVoice::prepareToPlay(double sampleRate, int samplesPerBlock, int outpu
     //sawWave.setFrequency(220.0f);
     // 
     // Set the current amount of gain.
-    gain.setGainLinear(0.25f);
+    gain.setGainLinear(0.5f);
 
-    // Give values to all the adsr parameters for now
-    adsrParams.attack = 0.8f;
-    adsrParams.decay = 0.8f;
-    adsrParams.sustain = 1.0f;
-    adsrParams.release = 2.0f;
 
-    // Set the adsr parameters
-    adsr.setParameters(adsrParams);
 
     // Signal that prepare to play has been called.
     isPrepared = true;
+}
+
+// Called from PluginProcessor to update the ADSR with atomic float variables when they are changed.
+void SynthVoice::updateADSR(const float attack, const float decay, const float sustain, const float release)
+{
+    // Give values to all the adsr parameters for now
+    adsrParams.attack = attack;
+    adsrParams.decay = decay;
+    adsrParams.sustain = sustain;
+    adsrParams.release = release;
+
+    // Set the adsr parameters
+    adsr.setParameters(adsrParams);
 }
 
 void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples)
