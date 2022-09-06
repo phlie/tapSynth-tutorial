@@ -12,6 +12,7 @@
 
 #include <JuceHeader.h>
 #include "SynthSound.h"
+#include "Data/AdsrData.h"
 
 // Represents a voice that a Synthesiser can use to play a SynthesiserSound.
 // A voice plays a single sound at a time, and a synthesiser holds an array of of vocies so that it can play polyphonically.
@@ -25,15 +26,12 @@ public:
     void pitchWheelMoved(int newPitchWheelValue) override;
     void prepareToPlay(double sampleRate, int samplesPerBlock, int outputChannel);
 
-    // Used to update the ADSR when called
-    void updateADSR(const float attack, const float decay, const float sustain, const float release);
+    void update(const float attack, const float decay, const float sustain, const float release);
 
     void renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples) override;
 private:
-    // A very simple ADSR envelope class.
-    juce::ADSR adsr;
-    // Holds the paramters being used by an ADSR object
-    juce::ADSR::Parameters adsrParams;
+    AdsrData adsr;
+
     // A multi-channel buffer containing floating point audio samples.
     juce::AudioBuffer<float> synthBuffer;
 

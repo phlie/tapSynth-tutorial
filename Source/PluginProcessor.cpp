@@ -192,7 +192,8 @@ void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
             auto& release = *apvts.getRawParameterValue("RELEASE");
 
             // The .load() on the end indicates that it is an atomic float not a normal float.
-            voice->updateADSR(attack.load(), decay.load(), sustain.load(), release.load());
+            // Updated to new class that encapsalates the Adsr component and data.
+            voice->update(attack.load(), decay.load(), sustain.load(), release.load());
             // LFO
         }
     }

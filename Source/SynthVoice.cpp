@@ -78,17 +78,10 @@ void SynthVoice::prepareToPlay(double sampleRate, int samplesPerBlock, int outpu
     isPrepared = true;
 }
 
-// Called from PluginProcessor to update the ADSR with atomic float variables when they are changed.
-void SynthVoice::updateADSR(const float attack, const float decay, const float sustain, const float release)
+// A general update method for use in updating variables.
+void SynthVoice::update(const float attack, const float decay, const float sustain, const float release)
 {
-    // Give values to all the adsr parameters for now
-    adsrParams.attack = attack;
-    adsrParams.decay = decay;
-    adsrParams.sustain = sustain;
-    adsrParams.release = release;
-
-    // Set the adsr parameters
-    adsr.setParameters(adsrParams);
+    adsr.updateADSR(attack, decay, sustain, release);
 }
 
 void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples)
