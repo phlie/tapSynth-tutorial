@@ -18,8 +18,8 @@ bool SynthVoice::canPlaySound(juce::SynthesiserSound* sound)
 
 void SynthVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound* sound, int currentPitchWheelPosition)
 {
-    // Set the frequency of the midi note after converting it to Hertz
-    sawWave.setFrequency(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber));
+    // Calls the OscData function.
+    osc.setWaveFrequency(midiNoteNumber);
     // Starts the envelope.
     adsr.noteOn();
 }
@@ -62,7 +62,7 @@ void SynthVoice::prepareToPlay(double sampleRate, int samplesPerBlock, int outpu
     spec.numChannels = outputChannels;
 
     // Tell the sawWave osciallator to get prepared with the ProcessSpec's
-    sawWave.prepare(spec);
+    osc.prepareToPlay(spec);
 
     // Tell the gain to do as the sawWave did.
     gain.prepare(spec);
@@ -105,7 +105,11 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int sta
 
     // Necessary so that two notes overlapping don't cause phase issues.
     juce::dsp::AudioBlock<float> audioBlock{ synthBuffer };
-    sawWave.process(juce::dsp::ProcessContextReplacing<float>(audioBlock));
+
+    // Calls the OscData's render next block function.
+    osc.getNextAudioBlock(audioBlock);
+
+    // Process the current gain with how much to increase the value of the audioBlock
     gain.process(juce::dsp::ProcessContextReplacing<float>(audioBlock));
 
     // Apply the envelope to the synthBuffer from 0, to its total number of samples.

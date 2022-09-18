@@ -13,6 +13,7 @@
 #include <JuceHeader.h>
 #include "SynthSound.h"
 #include "Data/AdsrData.h"
+#include "Data/OscData.h"
 
 // Represents a voice that a Synthesiser can use to play a SynthesiserSound.
 // A voice plays a single sound at a time, and a synthesiser holds an array of of vocies so that it can play polyphonically.
@@ -27,19 +28,25 @@ public:
     void prepareToPlay(double sampleRate, int samplesPerBlock, int outputChannel);
 
     void update(const float attack, const float decay, const float sustain, const float release);
-
     void renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples) override;
+
+    // 
+    OscData& getOscillator() { return osc; }
 private:
+    // Our own adsr class
     AdsrData adsr;
 
     // A multi-channel buffer containing floating point audio samples.
     juce::AudioBuffer<float> synthBuffer;
 
+    // Our own oscillator class
+    OscData osc;
+
     // Generates a signal based on a user-supplied function
-    juce::dsp::Oscillator<float> sineWave{ [](float x) {return std::sin(x); } };
+    //juce::dsp::Oscillator<float> sineWave{ [](float x) {return std::sin(x); } };
     // With a lookup table of 200 points
-    juce::dsp::Oscillator<float> sawWave{ [](float x) { return x / juce::MathConstants<float>::pi; }, 200 };
-    juce::dsp::Oscillator<float> squareWave{ [](float x) { return x < 0.0f ? -1.0f : 1.0f; } };
+    //juce::dsp::Oscillator<float> sawWave{ [](float x) { return x / juce::MathConstants<float>::pi; }, 200 };
+    //juce::dsp::Oscillator<float> squareWave{ [](float x) { return x < 0.0f ? -1.0f : 1.0f; } };
     
     // Applies a gain to audio samples as single samples or AudioBlocks.
     juce::dsp::Gain<float> gain;

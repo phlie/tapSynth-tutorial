@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "UI/AdsrComponent.h"
+#include "UI/OscComponent.h"
 
 //==============================================================================
 /**
@@ -32,6 +33,8 @@ private:
     // Create a reference to the codebase 
     TapSynthAudioProcessor& audioProcessor;
 
+    // Our two custom GUI Component classes
+    OscComponent osc;
     AdsrComponent adsr;
 
     // Finally create the dropdown menu attachment
