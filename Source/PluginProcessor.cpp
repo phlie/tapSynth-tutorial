@@ -190,10 +190,16 @@ void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
             auto& decay = *apvts.getRawParameterValue("DECAY");
             auto& sustain = *apvts.getRawParameterValue("SUSTAIN");
             auto& release = *apvts.getRawParameterValue("RELEASE");
-
+               
+            // Used to get the choice of oscillator
             auto& oscWaveChoice = *apvts.getRawParameterValue("OSC1WAVETYPE");
 
+            // Used for FM Synthesis
+            auto& fmDepth = *apvts.getRawParameterValue("FMDEPTH");
+            auto& fmFreq = *apvts.getRawParameterValue("FMFREQ");
+
             voice->getOscillator().setWaveType(oscWaveChoice);
+            voice->getOscillator().setFmParams(fmDepth, fmFreq);
 
             // The .load() on the end indicates that it is an atomic float not a normal float.
             // Updated to new class that encapsalates the Adsr component and data.
@@ -269,6 +275,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout TapSynthAudioProcessor::crea
     // OSC 1 Wave Type Choice Selection
     params.push_back(std::make_unique<juce::AudioParameterChoice>("OSC1WAVETYPE", "Osc 1 Wave Type", juce::StringArray{
         "Sine", "Saw", "Square" }, 0));
+
+    // The two parameters for FM Synthesis
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("FMFREQ", "FM Frequency", juce::NormalisableRange<float> {0.0f, 1000.0f, 0.01f, 0.3f}, 0.0f));
+    // Increment by 0.01 and set the skew factor as 0.3 which gives the lower range more of the room on the slider.
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("FMDEPTH", "FM Depth", juce::NormalisableRange<float> {0.0f, 1000.0f, 0.01f, 0.3f}, 0.0f));
 
     // Finally return where the unique vectors start and end on params.
     return { params.begin(), params.end() };

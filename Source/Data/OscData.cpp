@@ -12,20 +12,35 @@
 
 void OscData::prepareToPlay(juce::dsp::ProcessSpec& spec)
 {
+    // Prepare the fmOsc for play
+    fmOsc.prepare(spec);
+
     // Since we are within the Oscillator Class we just need to call prepare with the ProcessSpec reference
     prepare(spec);
 }
 
 void OscData::getNextAudioBlock(juce::dsp::AudioBlock<float>& block)
 {
+    // Loop through all the channels
+    for (int ch = 0; ch < block.getNumChannels(); ++ch)
+    {
+        // For each sample in the block
+        for (int s = 0; s < block.getNumSamples(); ++s)
+        {
+            // Set fmMod to be the processesd current sample
+            fmMod = fmOsc.processSample(block.getSample(ch, s)) * fmDepth;
+        }
+    }
+
     // Call the process the next audio block replacing the data in it.
     process(juce::dsp::ProcessContextReplacing<float>(block));
 }
 
 void OscData::setWaveFrequency(const int midiNoteNumber)
 {
-    // Set the frequency of the midi note after converting it to Hertz
-    setFrequency(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber));
+    // Set the frequency of the midi note after converting it to Hertz + the modification of the FM Osc
+    setFrequency(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber) + fmMod);
+    lastMidiNote = midiNoteNumber;
 }
 
 void OscData::setWaveType(const int choice)
@@ -52,4 +67,16 @@ void OscData::setWaveType(const int choice)
             jassertfalse;   // You're not suppose to be here!
             break;
     }
+}
+
+void OscData::setFmParams(const float depth, const float freq)
+{
+    // Set the frequency and depth
+    fmOsc.setFrequency(freq);
+    fmDepth = depth;
+
+    auto currentFreq = juce::MidiMessage::getMidiNoteInHertz(lastMidiNote) + fmMod;
+
+    // Set the frequency of the original osc
+    setFrequency(currentFreq >= 0 ? currentFreq : currentFreq * -1.0f);
 }

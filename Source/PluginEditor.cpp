@@ -11,7 +11,7 @@
 
 //==============================================================================
 TapSynthAudioProcessorEditor::TapSynthAudioProcessorEditor (TapSynthAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p), osc (audioProcessor.apvts, "OSC1WAVETYPE"), adsr(audioProcessor.apvts)
+    : AudioProcessorEditor (&p), audioProcessor (p), osc (audioProcessor.apvts, "OSC1WAVETYPE", "FMFREQ", "FMDEPTH"), adsr(audioProcessor.apvts)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
@@ -36,7 +36,7 @@ void TapSynthAudioProcessorEditor::paint (juce::Graphics& g)
 void TapSynthAudioProcessorEditor::resized()
 {
     // osc resize
-    osc.setBounds(10, 10, 100, 30);
+    osc.setBounds(10, 10, 200, 200);
     // adsr resize.
     adsr.setBounds(getWidth() / 2, 0, getWidth() / 2, getHeight());
 }
