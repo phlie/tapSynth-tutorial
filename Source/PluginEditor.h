@@ -39,6 +39,8 @@ private:
     AdsrComponent adsr;
     FilterComponent filter;
 
+    juce::ImageComponent backgroundImageComponent;
+
     // Finally create the dropdown menu attachment
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> oscSelectAttachment;
 

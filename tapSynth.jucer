@@ -5,6 +5,9 @@
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
               pluginFormats="buildStandalone,buildVST3">
   <MAINGROUP id="K6VZi8" name="tapSynth">
+    <GROUP id="{E4F17A49-7E79-2B03-5129-7A4E37499D38}" name="Resources">
+      <FILE id="TdQr6H" name="background.jpg" compile="0" resource="1" file="Resources/background.jpg"/>
+    </GROUP>
     <GROUP id="{CA100892-6E83-9948-ECB5-4062B0396F0A}" name="Source">
       <FILE id="uBPJmZ" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>

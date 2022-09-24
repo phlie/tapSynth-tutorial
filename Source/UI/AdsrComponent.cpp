@@ -38,7 +38,7 @@ AdsrComponent::~AdsrComponent()
 
 void AdsrComponent::paint (juce::Graphics& g)
 {
-    g.fillAll(juce::Colours::black);
+    //g.fillAll(juce::Colours::black);
     g.setColour(juce::Colours::white);
 
     auto bounds = getLocalBounds().reduced(5);
@@ -96,5 +96,8 @@ void AdsrComponent::setSliderParams(juce::Slider& slider)
 {
     slider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
     slider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 50, 25);
+    slider.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::aqua);
+    slider.setColour(juce::Slider::ColourIds::backgroundColourId, juce::Colours::black);
+    slider.setColour(juce::Slider::ColourIds::trackColourId, juce::Colours::silver);
     addAndMakeVisible(slider);
 }

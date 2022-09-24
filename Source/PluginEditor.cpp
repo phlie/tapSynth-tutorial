@@ -17,6 +17,22 @@ TapSynthAudioProcessorEditor::TapSynthAudioProcessorEditor (TapSynthAudioProcess
 , adsr(audioProcessor.apvts)
 , filter(audioProcessor.apvts, "FILTERTYPE", "FILTERCUTOFF", "FILTERRES")
 {
+    auto logo = juce::ImageCache::getFromMemory(BinaryData::background_jpg, BinaryData::background_jpgSize);
+
+    // If the image has been loaded from memory
+    if (!logo.isNull())
+    {
+        // Set the image and set it to stretch to fill its bounds
+        backgroundImageComponent.setImage(logo, juce::RectanglePlacement::stretchToFit);
+    }
+    else
+    {
+        // If the image is not loaded quit because of error.
+        jassert(!logo.isNull());
+    }
+
+    addAndMakeVisible(backgroundImageComponent);
+
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setSize (600, 500);
@@ -50,6 +66,9 @@ void TapSynthAudioProcessorEditor::resized()
     osc.setBounds(paddingX, paddingY, 300, 200);
     adsr.setBounds(osc.getRight() + 2*paddingX, paddingY, 280, 200);
     filter.setBounds(paddingX, osc.getBottom() + paddingY, 300, 200);
+
+    // Set the relative bounds of the image component.
+    backgroundImageComponent.setBoundsRelative(0.0f, 0.0f, 1.0f, 1.0f);
 }
 
 

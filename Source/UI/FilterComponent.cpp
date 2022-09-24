@@ -17,6 +17,7 @@ FilterComponent::FilterComponent(juce::AudioProcessorValueTreeState& apvts, juce
 {
     juce::StringArray choices{ "Low-pass", "Band-pass", "High-pass" };
     filterTypeSelector.addItemList(choices, 1);
+    filterTypeSelector.setColour(juce::ComboBox::ColourIds::backgroundColourId, juce::Colours::black);
     addAndMakeVisible(filterTypeSelector);
 
     filterTypeSelectorAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(apvts, filterTypeSelectorId, filterTypeSelector);
@@ -39,7 +40,7 @@ void FilterComponent::paint (juce::Graphics& g)
     auto bounds = getLocalBounds().reduced(5);
     auto labelSpace = bounds.removeFromTop(25.0f);
 
-    g.fillAll(juce::Colours::black);
+    //g.fillAll(juce::Colours::black);
     g.setColour(juce::Colours::white);
     g.setFont(20.0f);
     g.drawText("Filter", labelSpace.withX(5), juce::Justification::left);
@@ -71,6 +72,9 @@ void FilterComponent::setSliderWithLabel(juce::Slider& slider, juce::Label& labe
 {
     slider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     slider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 50, 25);
+    slider.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::aqua);
+    slider.setColour(juce::Slider::ColourIds::rotarySliderOutlineColourId, juce::Colours::black);
+    slider.setColour(juce::Slider::ColourIds::rotarySliderFillColourId, juce::Colours::silver);
     addAndMakeVisible(slider);
 
     attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, paramId, slider);
