@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include "SynthSound.h"
 #include "SynthVoice.h"
+#include "Data/FilterData.h"
 
 //==============================================================================
 /**
@@ -66,6 +67,8 @@ private:
     // To create a synthesiser, you'll need to create a subclass of SynthesiserSound to describe each sound available to your synth, and a subclass of SytnhesiserVoice which can play back on of those sounds.
     juce::Synthesiser synth;
     
+    FilterData filter;
+
     // This class is used in the AudioProcessorValueTreeState constructor to allow arbitrarily grouped RangedAudioParameters to be passed to an AudioProcessor.
     juce::AudioProcessorValueTreeState::ParameterLayout createParams();
     //==============================================================================

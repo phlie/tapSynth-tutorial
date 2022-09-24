@@ -41,11 +41,17 @@ void OscComponent::paint (juce::Graphics& g)
     g.setColour(juce::Colours::white);
 
     // Useful for seeing the size of a component
-    g.drawRect(getLocalBounds());
+    //g.drawRect(getLocalBounds());
+    auto bounds = getLocalBounds().reduced(5);
+    auto labelSpace = bounds.removeFromTop(25.0f);
+    g.setFont(20.0f);
+    g.drawText("Oscillator", labelSpace.withX(5), juce::Justification::left);
+    g.drawRoundedRectangle(bounds.toFloat(), 5.0f, 5.0f);
 }
 
 void OscComponent::resized()
 {
+    /*
     // Variables to hold the information that is shared across the sliders and labels
     const auto sliderPosY = 80;
     const auto sliderWidth = 100;
@@ -63,7 +69,23 @@ void OscComponent::resized()
     // Set the bounds of the FM Depth knob
     fmDepthSlider.setBounds(fmFreqSlider.getRight(), sliderPosY, sliderWidth, sliderHeight);
     fmDepthLabel.setBounds(fmDepthSlider.getX(), fmDepthSlider.getY() - labelYOffset, fmDepthSlider.getWidth(), labelHeight);
+*/
+    const auto startY = 55;
+    const auto sliderWidth = 100;
+    const auto sliderHeight = 90;
+    const auto labelYOffset = 20;
+    const auto labelHeight = 20;
 
+    oscWaveSelector.setBounds(10, startY + 5, 90, 30);
+    //oscW.setBounds(10, startY - labelYOffset, 90, labelHeight);
+
+    fmFreqSlider.setBounds(oscWaveSelector.getRight(), startY, sliderWidth, sliderHeight);
+    fmFreqLabel.setBounds(fmFreqSlider.getX(), fmFreqSlider.getY() - labelYOffset, fmFreqSlider.getWidth(), labelHeight);
+
+   fmDepthSlider.setBounds(fmFreqSlider.getRight(), startY, sliderWidth, sliderHeight);
+    // By setting the label to be the same width as the slider, with center justification the text while appear exactly in the middle relative to its slider.
+   fmDepthLabel.setBounds(fmDepthSlider.getX(), fmDepthSlider.getY() - labelYOffset,
+        fmDepthSlider.getWidth(), labelHeight);
 }
 
 void OscComponent::setSliderWithLabel(juce::Slider& slider, juce::Label& label, juce::AudioProcessorValueTreeState& apvts, juce::String paramId, std::unique_ptr<Attachment>& attachment)

@@ -114,6 +114,8 @@ void TapSynthAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
         }
 
     }
+
+    filter.prepareToPlay(sampleRate, samplesPerBlock, getTotalNumOutputChannels());
 }
 
 void TapSynthAudioProcessor::releaseResources()
@@ -215,6 +217,15 @@ void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
 
     // Call the synth renderNextBlock with the current buffer, any midiMessages, start sample in the buffer, and total number of samples in the buffer.
     synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
+
+    // Filter Section
+    auto& filterType = *apvts.getRawParameterValue("FILTERTYPE");
+    auto& cutoff = *apvts.getRawParameterValue("FILTERCUTOFF");
+    auto& resonance = *apvts.getRawParameterValue("FILTERRES");
+
+    filter.updateParameters(filterType, cutoff, resonance);
+
+    filter.process(buffer);
 }
 
 //==============================================================================
@@ -280,6 +291,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout TapSynthAudioProcessor::crea
     params.push_back(std::make_unique<juce::AudioParameterFloat>("FMFREQ", "FM Frequency", juce::NormalisableRange<float> {0.0f, 1000.0f, 0.01f, 0.3f}, 0.0f));
     // Increment by 0.01 and set the skew factor as 0.3 which gives the lower range more of the room on the slider.
     params.push_back(std::make_unique<juce::AudioParameterFloat>("FMDEPTH", "FM Depth", juce::NormalisableRange<float> {0.0f, 1000.0f, 0.01f, 0.3f}, 0.0f));
+
+
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("FILTERTYPE", "Filter Type", juce::StringArray{ "low-pass", "band-pass", "high-pass" }, 0));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("FILTERCUTOFF", "Filter Cutoff", juce::NormalisableRange<float>{20.0f, 20000.0f, 0.1f, 0.6f}, 200.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("FILTERRES", "Filter Resonance", juce::NormalisableRange<float>{1.0f, 10.0f, 0.1f}, 1.0f));
 
     // Finally return where the unique vectors start and end on params.
     return { params.begin(), params.end() };

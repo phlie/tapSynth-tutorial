@@ -12,6 +12,7 @@
 #include "PluginProcessor.h"
 #include "UI/AdsrComponent.h"
 #include "UI/OscComponent.h"
+#include "UI/FilterComponent.h"
 
 //==============================================================================
 /**
@@ -36,6 +37,7 @@ private:
     // Our two custom GUI Component classes
     OscComponent osc;
     AdsrComponent adsr;
+    FilterComponent filter;
 
     // Finally create the dropdown menu attachment
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> oscSelectAttachment;
