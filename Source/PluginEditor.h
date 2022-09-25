@@ -38,6 +38,7 @@ private:
     OscComponent osc;
     AdsrComponent adsr;
     FilterComponent filter;
+    AdsrComponent modAdsr;
 
     juce::ImageComponent backgroundImageComponent;
 

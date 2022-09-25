@@ -10,12 +10,13 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-TapSynthAudioProcessorEditor::TapSynthAudioProcessorEditor (TapSynthAudioProcessor& p)
-: AudioProcessorEditor (&p)
-, audioProcessor (p)
-, osc (audioProcessor.apvts, "OSC1WAVETYPE", "FMFREQ", "FMDEPTH")
-, adsr(audioProcessor.apvts)
-, filter(audioProcessor.apvts, "FILTERTYPE", "FILTERCUTOFF", "FILTERRES")
+TapSynthAudioProcessorEditor::TapSynthAudioProcessorEditor(TapSynthAudioProcessor& p)
+    : AudioProcessorEditor(&p)
+    , audioProcessor(p)
+    , osc(audioProcessor.apvts, "OSC1WAVETYPE", "FMFREQ", "FMDEPTH")
+    , adsr("Amp Envelope", audioProcessor.apvts, "ATTACK", "DECAY", "SUSTAIN", "RELEASE")
+    , filter(audioProcessor.apvts, "FILTERTYPE", "FILTERCUTOFF", "FILTERRES")
+    , modAdsr("Mod Envelope", audioProcessor.apvts, "MODATTACK", "MODDECAY", "MODSUSTAIN", "MODRELEASE")
 {
     auto logo = juce::ImageCache::getFromMemory(BinaryData::background_jpg, BinaryData::background_jpgSize);
 
@@ -41,6 +42,7 @@ TapSynthAudioProcessorEditor::TapSynthAudioProcessorEditor (TapSynthAudioProcess
     addAndMakeVisible(osc);
     addAndMakeVisible(adsr);
     addAndMakeVisible(filter);
+    addAndMakeVisible(modAdsr);
 }
 
 TapSynthAudioProcessorEditor::~TapSynthAudioProcessorEditor()
@@ -66,6 +68,7 @@ void TapSynthAudioProcessorEditor::resized()
     osc.setBounds(paddingX, paddingY, 300, 200);
     adsr.setBounds(osc.getRight() + 2*paddingX, paddingY, 280, 200);
     filter.setBounds(paddingX, osc.getBottom() + paddingY, 300, 200);
+    modAdsr.setBounds(filter.getRight() + 2 * paddingX, osc.getBottom() + paddingY, 280, 200);
 
     // Set the relative bounds of the image component.
     backgroundImageComponent.setBoundsRelative(0.0f, 0.0f, 1.0f, 1.0f);

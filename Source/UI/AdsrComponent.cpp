@@ -12,15 +12,17 @@
 #include "AdsrComponent.h"
 
 //==============================================================================
-AdsrComponent::AdsrComponent(juce::AudioProcessorValueTreeState& apvts)
+AdsrComponent::AdsrComponent(juce::String name, juce::AudioProcessorValueTreeState& apvts, juce::String attackId, juce::String decayId, juce::String sustainId, juce::String releaseId)
 {
+    componentName = name;
+    
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
         // Attach each audioProcessor element to its own front-end knob or combobox
-    attackAttachment = std::make_unique<SliderAttachment>(apvts, "ATTACK", attackSlider);
-    decayAttachment = std::make_unique<SliderAttachment>(apvts, "DECAY", decaySlider);
-    sustainAttachment = std::make_unique<SliderAttachment>(apvts, "SUSTAIN", sustainSlider);
-    releaseAttachment = std::make_unique<SliderAttachment>(apvts, "RELEASE", releaseSlider);
+    attackAttachment = std::make_unique<SliderAttachment>(apvts, attackId, attackSlider);
+    decayAttachment = std::make_unique<SliderAttachment>(apvts, decayId, decaySlider);
+    sustainAttachment = std::make_unique<SliderAttachment>(apvts, sustainId, sustainSlider);
+    releaseAttachment = std::make_unique<SliderAttachment>(apvts, releaseId, releaseSlider);
 
     
 
@@ -44,7 +46,7 @@ void AdsrComponent::paint (juce::Graphics& g)
     auto bounds = getLocalBounds().reduced(5);
     auto labelSpace = bounds.removeFromTop(25.0f);
     g.setFont(20.0f);
-    g.drawText("ADSR", labelSpace.withX(5), juce::Justification::left);
+    g.drawText(componentName, labelSpace.withX(5), juce::Justification::left);
     g.drawRoundedRectangle(bounds.toFloat(), 5.0f, 5.0f);
 }
 

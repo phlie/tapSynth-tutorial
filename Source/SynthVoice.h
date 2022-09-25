@@ -12,8 +12,9 @@
 
 #include <JuceHeader.h>
 #include "SynthSound.h"
-#include "Data/AdsrData.h"
 #include "Data/OscData.h"
+#include "Data/AdsrData.h"
+#include "Data/FilterData.h"
 
 // Represents a voice that a Synthesiser can use to play a SynthesiserSound.
 // A voice plays a single sound at a time, and a synthesiser holds an array of of vocies so that it can play polyphonically.
@@ -27,14 +28,14 @@ public:
     void pitchWheelMoved(int newPitchWheelValue) override;
     void prepareToPlay(double sampleRate, int samplesPerBlock, int outputChannel);
 
-    void update(const float attack, const float decay, const float sustain, const float release);
+    void updateAdsr(const float attack, const float decay, const float sustain, const float release);
     void renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples) override;
 
+    void updateFilter(const int filterType, const float cutoff, const float resonance);
+    void updateModAdsr(const float attack, const float decay, const float sustain, const float release);
     // 
     OscData& getOscillator() { return osc; }
 private:
-    // Our own adsr class
-    AdsrData adsr;
 
     // A multi-channel buffer containing floating point audio samples.
     juce::AudioBuffer<float> synthBuffer;
@@ -42,6 +43,13 @@ private:
     // Our own oscillator class
     OscData osc;
 
+    // Our own adsr class
+    AdsrData adsr;
+    
+    // Can be implemented either in AudioProcessor class or the individual SynthVoice class
+    FilterData filter;
+
+    AdsrData modAdsr;
     // Generates a signal based on a user-supplied function
     //juce::dsp::Oscillator<float> sineWave{ [](float x) {return std::sin(x); } };
     // With a lookup table of 200 points

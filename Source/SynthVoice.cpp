@@ -22,12 +22,14 @@ void SynthVoice::startNote(int midiNoteNumber, float velocity, juce::Synthesiser
     osc.setWaveFrequency(midiNoteNumber);
     // Starts the envelope.
     adsr.noteOn();
+    modAdsr.noteOn();
 }
 
 void SynthVoice::stopNote(float velocity, bool allowTailOff)
 {
     // Signals the adsr to start the release stage
     adsr.noteOff();
+    modAdsr.noteOff();
 
     // If no more tail off or the adsr is not active, clear current note.
     if (!allowTailOff || !adsr.isActive())
@@ -49,8 +51,6 @@ void SynthVoice::prepareToPlay(double sampleRate, int samplesPerBlock, int outpu
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
     
-    // Tell the adsr the current sample rate.
-    adsr.setSampleRate(sampleRate);
 
     // This structure is passed into a DSP algorithm's prepare() method, and contains information about various aspects of the context in which it can expect to be called.
     juce::dsp::ProcessSpec spec;
@@ -63,7 +63,13 @@ void SynthVoice::prepareToPlay(double sampleRate, int samplesPerBlock, int outpu
 
     // Tell the sawWave osciallator to get prepared with the ProcessSpec's
     osc.prepareToPlay(spec);
+    
+    // Tell the adsr the current sample rate.
+    adsr.setSampleRate(sampleRate);
 
+    filter.prepareToPlay(sampleRate, samplesPerBlock, outputChannels);
+
+    modAdsr.setSampleRate(sampleRate);
     // Tell the gain to do as the sawWave did.
     gain.prepare(spec);
 
@@ -79,7 +85,7 @@ void SynthVoice::prepareToPlay(double sampleRate, int samplesPerBlock, int outpu
 }
 
 // A general update method for use in updating variables.
-void SynthVoice::update(const float attack, const float decay, const float sustain, const float release)
+void SynthVoice::updateAdsr(const float attack, const float decay, const float sustain, const float release)
 {
     adsr.updateADSR(attack, decay, sustain, release);
 }
@@ -95,6 +101,7 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int sta
 
     // Set the size for synthBuffer while not reallocating memory unless it needs to grow.
     synthBuffer.setSize(outputBuffer.getNumChannels(), numSamples, false, false, true);
+    modAdsr.applyEnvelopeToBuffer(synthBuffer, 0, numSamples);
     synthBuffer.clear();
 
     /*juce::dsp::AudioBlock<float> audioBlock{outputBuffer};
@@ -108,12 +115,14 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int sta
 
     // Calls the OscData's render next block function.
     osc.getNextAudioBlock(audioBlock);
+    // Apply the envelope to the synthBuffer from 0, to its total number of samples.
+    adsr.applyEnvelopeToBuffer(synthBuffer, 0,synthBuffer.getNumSamples());
+
+    filter.process(synthBuffer);
 
     // Process the current gain with how much to increase the value of the audioBlock
     gain.process(juce::dsp::ProcessContextReplacing<float>(audioBlock));
 
-    // Apply the envelope to the synthBuffer from 0, to its total number of samples.
-    adsr.applyEnvelopeToBuffer(synthBuffer, 0,synthBuffer.getNumSamples());
 
     // Can be used for debugging
     //if (startSample != 0)
@@ -131,4 +140,17 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int sta
             clearCurrentNote();
         }
     }
+
+}
+
+void SynthVoice::updateModAdsr(const float attack, const float decay, const float sustain, const float release)
+{
+    modAdsr.updateADSR(attack, decay, sustain, release);
+}
+
+// The Const is mostly there to show that we aren't going to modify the variable.
+void SynthVoice::updateFilter(const int filterType, const float cutoff, const float resonance)
+{
+    float modulatorValue = modAdsr.getNextSample();
+    filter.updateParameters(filterType, cutoff, resonance, modulatorValue);
 }
