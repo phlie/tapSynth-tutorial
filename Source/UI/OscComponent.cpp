@@ -23,10 +23,13 @@ OscComponent::OscComponent(juce::AudioProcessorValueTreeState& apvts, juce::Stri
     // Finally add and make visible the combo box
     addAndMakeVisible(oscWaveSelector);
 
+    // Set the background color of the Osc Type selector
     oscWaveSelector.setColour(juce::ComboBox::ColourIds::backgroundColourId, juce::Colours::black);
+
     // Allows you to link up the choice that the user makes with the actual visible representation that they see.
     oscWaveSelectorAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(apvts, waveSelectorId, oscWaveSelector);
 
+    // Finally call our custom slider class on both the sliders.
     setSliderWithLabel(fmFreqSlider, fmFreqLabel, apvts, fmFreqId, fmFreqAttachment);
     setSliderWithLabel(fmDepthSlider, fmDepthLabel, apvts, fmDepthId, fmDepthAttachment);
 }
@@ -37,6 +40,8 @@ OscComponent::~OscComponent()
 
 void OscComponent::paint (juce::Graphics& g)
 {
+    // See AdsrComponent for a better description.
+
     // Paint the background of the box white.
     //g.fillAll(juce::Colours::black);
     g.setColour(juce::Colours::white);
@@ -71,6 +76,8 @@ void OscComponent::resized()
     fmDepthSlider.setBounds(fmFreqSlider.getRight(), sliderPosY, sliderWidth, sliderHeight);
     fmDepthLabel.setBounds(fmDepthSlider.getX(), fmDepthSlider.getY() - labelYOffset, fmDepthSlider.getWidth(), labelHeight);
 */
+
+    // See AdsrComponent for a better description.
     const auto startY = 55;
     const auto sliderWidth = 100;
     const auto sliderHeight = 90;
@@ -89,6 +96,7 @@ void OscComponent::resized()
         fmDepthSlider.getWidth(), labelHeight);
 }
 
+// Sets up the slider
 void OscComponent::setSliderWithLabel(juce::Slider& slider, juce::Label& label, juce::AudioProcessorValueTreeState& apvts, juce::String paramId, std::unique_ptr<Attachment>& attachment)
 {
     // Sets the slider style and makes it visible
