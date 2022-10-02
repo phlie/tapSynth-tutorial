@@ -22,6 +22,7 @@ public:
 private:
     // A very simple ADSR envelope class.
     juce::ADSR adsr;
+
     // Holds the paramters being used by an ADSR object
     juce::ADSR::Parameters adsrParams;
 };

@@ -10,6 +10,7 @@
 #include "PluginEditor.h"
 
 //==============================================================================
+// The Default Constructor with the initialize list.
 TapSynthAudioProcessorEditor::TapSynthAudioProcessorEditor(TapSynthAudioProcessor& p)
     : AudioProcessorEditor(&p)
     , audioProcessor(p)
@@ -18,6 +19,7 @@ TapSynthAudioProcessorEditor::TapSynthAudioProcessorEditor(TapSynthAudioProcesso
     , filter(audioProcessor.apvts, "FILTERTYPE", "FILTERCUTOFF", "FILTERRES")
     , modAdsr("Mod Envelope", audioProcessor.apvts, "MODATTACK", "MODDECAY", "MODSUSTAIN", "MODRELEASE")
 {
+    // Get the Background Image from the binary data, passing in its size.
     auto logo = juce::ImageCache::getFromMemory(BinaryData::background_jpg, BinaryData::background_jpgSize);
 
     // If the image has been loaded from memory
@@ -32,6 +34,7 @@ TapSynthAudioProcessorEditor::TapSynthAudioProcessorEditor(TapSynthAudioProcesso
         jassert(!logo.isNull());
     }
 
+    // Make the background image visible.
     addAndMakeVisible(backgroundImageComponent);
 
     // Make sure that before the constructor has finished, you've set the
@@ -62,9 +65,12 @@ void TapSynthAudioProcessorEditor::resized()
     //osc.setBounds(10, 10, 200, 200);
     // adsr resize.
     //adsr.setBounds(getWidth() / 2, 0, getWidth() / 2, getHeight());
+
+    // Sets the padding.
     const auto paddingX = 5;
     const auto paddingY = 30;
 
+    // Display all 4 of the various subcomponents.
     osc.setBounds(paddingX, paddingY, 300, 200);
     adsr.setBounds(osc.getRight() + 2*paddingX, paddingY, 280, 200);
     filter.setBounds(paddingX, osc.getBottom() + paddingY, 300, 200);

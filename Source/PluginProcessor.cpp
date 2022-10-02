@@ -211,8 +211,10 @@ void TapSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
             auto& modSustain = *apvts.getRawParameterValue("MODSUSTAIN");
             auto& modRelease = *apvts.getRawParameterValue("MODRELEASE");
 
-            voice->getOscillator().setWaveType(oscWaveChoice);
-            voice->getOscillator().setFmParams(fmDepth, fmFreq);
+            // Set the voice's wave type as well as FM params.
+            voice->getOscillator().setWaveType(oscWaveChoice.load());
+            voice->getOscillator().setFmParams(fmDepth.load(), fmFreq.load());
+
             // The .load() on the end indicates that it is an atomic float not a normal float.
             // Updated to new class that encapsalates the Adsr component and data.
             voice->updateAdsr(attack.load(), decay.load(), sustain.load(), release.load());

@@ -20,14 +20,17 @@ void SynthVoice::startNote(int midiNoteNumber, float velocity, juce::Synthesiser
 {
     // Calls the OscData function.
     osc.setWaveFrequency(midiNoteNumber);
+    
     // Starts the envelope.
     adsr.noteOn();
+
+    // Starts the filter modulation.
     modAdsr.noteOn();
 }
 
 void SynthVoice::stopNote(float velocity, bool allowTailOff)
 {
-    // Signals the adsr to start the release stage
+    // Signals the adsr to start the release stage and the filter modulation.
     adsr.noteOff();
     modAdsr.noteOff();
 
@@ -54,10 +57,13 @@ void SynthVoice::prepareToPlay(double sampleRate, int samplesPerBlock, int outpu
 
     // This structure is passed into a DSP algorithm's prepare() method, and contains information about various aspects of the context in which it can expect to be called.
     juce::dsp::ProcessSpec spec;
+    
     // Set the largest block size
     spec.maximumBlockSize = samplesPerBlock;
+    
     // Set the sample rate
     spec.sampleRate = sampleRate;
+    
     // Set the total number of channels
     spec.numChannels = outputChannels;
 
@@ -67,18 +73,19 @@ void SynthVoice::prepareToPlay(double sampleRate, int samplesPerBlock, int outpu
     // Tell the adsr the current sample rate.
     adsr.setSampleRate(sampleRate);
 
+    // Prepares the filter for play
     filter.prepareToPlay(sampleRate, samplesPerBlock, outputChannels);
 
+    // Sets the modulator's sample rate.
     modAdsr.setSampleRate(sampleRate);
+    
     // Tell the gain to do as the sawWave did.
     gain.prepare(spec);
 
     //sawWave.setFrequency(220.0f);
-    // 
+
     // Set the current amount of gain.
     gain.setGainLinear(0.5f);
-
-
 
     // Signal that prepare to play has been called.
     isPrepared = true;
@@ -101,7 +108,11 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int sta
 
     // Set the size for synthBuffer while not reallocating memory unless it needs to grow.
     synthBuffer.setSize(outputBuffer.getNumChannels(), numSamples, false, false, true);
+
+    // Call this one on the synthBuffer right before it is cleared so the modulation ADSR works correctly.
     modAdsr.applyEnvelopeToBuffer(synthBuffer, 0, numSamples);
+
+    // Clear the buffer.
     synthBuffer.clear();
 
     /*juce::dsp::AudioBlock<float> audioBlock{outputBuffer};
@@ -115,9 +126,11 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int sta
 
     // Calls the OscData's render next block function.
     osc.getNextAudioBlock(audioBlock);
+    
     // Apply the envelope to the synthBuffer from 0, to its total number of samples.
     adsr.applyEnvelopeToBuffer(synthBuffer, 0,synthBuffer.getNumSamples());
 
+    // Given the synthBuffer, filter it.
     filter.process(synthBuffer);
 
     // Process the current gain with how much to increase the value of the audioBlock
@@ -145,12 +158,16 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int sta
 
 void SynthVoice::updateModAdsr(const float attack, const float decay, const float sustain, const float release)
 {
+    // Update the modulation adsr
     modAdsr.updateADSR(attack, decay, sustain, release);
 }
 
 // The Const is mostly there to show that we aren't going to modify the variable.
 void SynthVoice::updateFilter(const int filterType, const float cutoff, const float resonance)
 {
+    // Gets the next sample.
     float modulatorValue = modAdsr.getNextSample();
+
+    // Update the filter's parameters.
     filter.updateParameters(filterType, cutoff, resonance, modulatorValue);
 }

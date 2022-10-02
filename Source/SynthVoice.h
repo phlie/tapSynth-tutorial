@@ -21,19 +21,33 @@
 class SynthVoice : public juce::SynthesiserVoice
 {
 public:
+    // Checks to see if it can play the passed in Sound
     bool canPlaySound(juce::SynthesiserSound* sound) override;
+
+    // Starts the next note.
     void startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound* sound, int currentPitchWheelPosition) override;
+    
+    // Stops the current note played by this synth voice.
     void stopNote(float velocity, bool allowTailOff) override;
     void controllerMoved(int controllerNumber, int newControllerValue) override;
     void pitchWheelMoved(int newPitchWheelValue) override;
+
+    // Prepares all the algorithms for play.
     void prepareToPlay(double sampleRate, int samplesPerBlock, int outputChannel);
 
+    // Update the Adsr component.
     void updateAdsr(const float attack, const float decay, const float sustain, const float release);
+
+    // Given an AudioBuffer it renders the output from this Synth Voice.
     void renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples) override;
 
+    // Updates the Filter's parameters.
     void updateFilter(const int filterType, const float cutoff, const float resonance);
+    
+    // Updates the modulation Adsr.
     void updateModAdsr(const float attack, const float decay, const float sustain, const float release);
-    // 
+    
+    // Returns this synth voice's oscillator.
     OscData& getOscillator() { return osc; }
 private:
 

@@ -31,6 +31,7 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     juce::ComboBox oscSelector;
+
     // Create a reference to the codebase 
     TapSynthAudioProcessor& audioProcessor;
 
@@ -40,6 +41,7 @@ private:
     FilterComponent filter;
     AdsrComponent modAdsr;
 
+    // Holds the background image.
     juce::ImageComponent backgroundImageComponent;
 
     // Finally create the dropdown menu attachment

@@ -27,7 +27,7 @@ void OscData::getNextAudioBlock(juce::dsp::AudioBlock<float>& block)
         // For each sample in the block
         for (int s = 0; s < block.getNumSamples(); ++s)
         {
-            // Set fmMod to be the processesd current sample
+            // Set fmMod to be the processesd current sample times the fmDepth
             fmMod = fmOsc.processSample(block.getSample(ch, s)) * fmDepth;
         }
     }
@@ -36,13 +36,17 @@ void OscData::getNextAudioBlock(juce::dsp::AudioBlock<float>& block)
     process(juce::dsp::ProcessContextReplacing<float>(block));
 }
 
+// [[[ERROR]]] The Frequency Modulation is only being updated once per block when it should be once per sample.
 void OscData::setWaveFrequency(const int midiNoteNumber)
 {
     // Set the frequency of the midi note after converting it to Hertz + the modification of the FM Osc
     setFrequency(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber) + fmMod);
+
+    // Set the last midi note.
     lastMidiNote = midiNoteNumber;
 }
 
+// Choose the wave type for the osc.
 void OscData::setWaveType(const int choice)
 {
     //std::sin(x); // Sine Wave
@@ -75,8 +79,9 @@ void OscData::setFmParams(const float depth, const float freq)
     fmOsc.setFrequency(freq);
     fmDepth = depth;
 
+    // Sets the current frequency of the osc.
     auto currentFreq = juce::MidiMessage::getMidiNoteInHertz(lastMidiNote) + fmMod;
 
-    // Set the frequency of the original osc
+    // Set the frequency of the original osc making sure it is always positive.
     setFrequency(currentFreq >= 0 ? currentFreq : currentFreq * -1.0f);
 }
